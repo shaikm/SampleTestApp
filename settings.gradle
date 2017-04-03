@@ -1,0 +1,5 @@
+/*
+ * Copyright 2016 Dominion Enterprises. All Rights Reserved.
+ */
+
+include ':app'

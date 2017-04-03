@@ -1,0 +1,11 @@
+<!--
+  ~ Copyright 2016 Dominion Enterprises. All Rights Reserved.
+  -->
+
+<resources>
+    <string name="app_name">DDSRefactorTest</string>
+    <string name="error">Error</string>
+    <string name="something_went_wrong">Something went wrong</string>
+    <string name="users">Users</string>
+    <string name="user_posts">User Posts</string>
+</resources>
