@@ -69,23 +69,39 @@ public class UserPostsActivity extends Activity
         
         loadingIndicator.setVisibility( View.VISIBLE );
 
-        Jackson2SpringAndroidSpiceService service = new Jackson2SpringAndroidSpiceService();
-        service.createRestTemplate();
-        UserPostsResponse response = null;
-        try {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-            response = userPostsRequest.loadDataFromNetwork();
-            posts.addAll( response );
+                Jackson2SpringAndroidSpiceService service = new Jackson2SpringAndroidSpiceService();
+                service.createRestTemplate();
+                UserPostsResponse response = null;
+                try {
 
-            adapter.notifyDataSetChanged();
+                    response = userPostsRequest.loadDataFromNetwork();
+                    posts.addAll(response);
 
-            loadingIndicator.setVisibility( View.INVISIBLE );
-        } catch (Exception e) {
-            e.printStackTrace();
-            loadingIndicator.setVisibility( View.INVISIBLE );
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            adapter.notifyDataSetChanged();
+                            loadingIndicator.setVisibility(View.INVISIBLE);
+                        }
+                    });
 
-            new AlertDialog.Builder( UserPostsActivity.this ).setTitle( R.string.error ).setMessage( R.string.something_went_wrong ).show();
-        }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            loadingIndicator.setVisibility(View.INVISIBLE);
+                            new AlertDialog.Builder(UserPostsActivity.this).setTitle(R.string.error).setMessage(R.string.something_went_wrong).show();
+                        }
+                    });
+
+                }
+            }
+        }).start();
 
     }
     

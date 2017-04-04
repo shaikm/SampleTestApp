@@ -53,19 +53,21 @@ public class UserPostActivityTest {
     }
 
     @Test
-    public void listViewPostActivityTestWithCount() {
+    public void listViewPostActivityTestWithCount() throws InterruptedException {
         assertNotNull("ListView not found ", listView);
         ShadowListView listview = Shadows.shadowOf(listView);
         listview.populateItems();
+        Thread.sleep(5000);
         ShadowLog.d(LOG_TAG, "Post Count is" + listView.getAdapter().getCount());
         assertEquals(listView.getAdapter().getCount(), 10);
     }
 
     @Test
-    public void listViewPostActivityTestFirstItem() {
+    public void listViewPostActivityTestFirstItem() throws InterruptedException {
         assertNotNull("ListView not found ", listView);
         ShadowListView listview = Shadows.shadowOf(listView);
         listview.populateItems();
+        Thread.sleep(5000);
         ShadowLog.d(LOG_TAG, "Post title is  " + ((Post)listView.getAdapter().getItem(0)).getTitle());
         assertEquals(((Post)listView.getAdapter().getItem(0)).getTitle(), FIRST_POST_NAME);
     }

@@ -52,19 +52,21 @@ public class UsersActivityTest {
     }
 
     @Test
-    public void listViewTestWithCount() {
+    public void listViewTestWithCount() throws InterruptedException {
         assertNotNull("ListView not found ", listView);
         ShadowListView listview = Shadows.shadowOf(listView);
         listview.populateItems();
+        Thread.sleep(5000);
         ShadowLog.d(LOG_TAG, "Count is" + listView.getAdapter().getCount());
         assertEquals(listView.getAdapter().getCount(), 10);
     }
 
     @Test
-    public void listViewTestFirstItem() {
+    public void listViewTestFirstItem() throws InterruptedException {
         assertNotNull("ListView not found ", listView);
         ShadowListView listview = Shadows.shadowOf(listView);
         listview.populateItems();
+        Thread.sleep(5000);
         ShadowLog.d(LOG_TAG, "User Name is" + ((User)listView.getAdapter().getItem(0)).getName());
         assertEquals(((User)listView.getAdapter().getItem(0)).getName(), FIRST_USER_NAME);
     }

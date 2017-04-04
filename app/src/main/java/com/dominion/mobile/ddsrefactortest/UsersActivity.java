@@ -34,82 +34,92 @@ import java.util.List;
  * @version 1.0.0
  * @since 1.0.0
  */
-public class UsersActivity extends Activity
-{
+public class UsersActivity extends Activity {
 
     private UsersRequest userRequest;
 
     @Override
-    protected void onCreate( final Bundle savedInstanceState )
-    {
-        super.onCreate( savedInstanceState );
+    protected void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-        setContentView( R.layout.activity_users );
+        setContentView(R.layout.activity_users);
 
-        adapter = new UsersAdapter( this, users );
+        adapter = new UsersAdapter(this, users);
         userRequest = new UsersRequest();
-        
-        ListView listView = (ListView) findViewById( R.id.users );
-        listView.setAdapter( adapter );
-        listView.setOnItemClickListener( new OnItemClickListener()
-        {
+
+        ListView listView = (ListView) findViewById(R.id.users);
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new OnItemClickListener() {
             @Override
-            public void onItemClick( AdapterView<?> adapterView, View view, int position, long id )
-            {
-                Intent intent = new Intent( UsersActivity.this, UserPostsActivity.class );
-                intent.putExtra( UserPostsActivity.EXTRA_USER, users.get( position ) );
-                
-                startActivity( intent );
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                Intent intent = new Intent(UsersActivity.this, UserPostsActivity.class);
+                intent.putExtra(UserPostsActivity.EXTRA_USER, users.get(position));
+
+                startActivity(intent);
             }
-        } );
+        });
 
 
-        
-        loadingIndicator = (ProgressBar) findViewById( R.id.loading_indicator );
+        loadingIndicator = (ProgressBar) findViewById(R.id.loading_indicator);
     }
-    
+
     @Override
-    protected void onStart()
-    {
+    protected void onStart() {
         super.onStart();
-        
+
     }
-    
+
     @Override
-    protected void onResume()
-    {
+    protected void onResume() {
         super.onResume();
-        
-        loadingIndicator.setVisibility( View.VISIBLE );
 
-        Jackson2SpringAndroidSpiceService service = new Jackson2SpringAndroidSpiceService();
-        service.createRestTemplate();
-        UsersResponse response = null;
-        try {
+        loadingIndicator.setVisibility(View.VISIBLE);
 
-            response = userRequest.loadDataFromNetwork();
-            users.addAll( response );
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-            adapter.notifyDataSetChanged();
 
-            loadingIndicator.setVisibility( View.INVISIBLE );
-        } catch (Exception e) {
-            e.printStackTrace();
-            loadingIndicator.setVisibility( View.INVISIBLE );
+                Jackson2SpringAndroidSpiceService service = new Jackson2SpringAndroidSpiceService();
+                service.createRestTemplate();
+                UsersResponse response = null;
+                try {
 
-            new AlertDialog.Builder( UsersActivity.this ).setTitle( R.string.error ).setMessage( R.string.something_went_wrong ).show();
-        }
+                    response = userRequest.loadDataFromNetwork();
+                    users.addAll(response);
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            adapter.notifyDataSetChanged();
+                            loadingIndicator.setVisibility(View.INVISIBLE);
+                        }
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            loadingIndicator.setVisibility(View.INVISIBLE);
+
+                            new AlertDialog.Builder(UsersActivity.this).setTitle(R.string.error).setMessage(R.string.something_went_wrong).show();
+                        }
+                    });
+
+                }
+            }
+        }).start();
+
 
     }
-    
+
     @Override
-    protected void onStop()
-    {
+    protected void onStop() {
 
         super.onStop();
     }
 
-    
+
     private UsersAdapter adapter;
     private ProgressBar loadingIndicator;
 
